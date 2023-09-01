@@ -1,11 +1,37 @@
-import express from "express";
+const cors = require('cors')
+const express = require('express')
+require('dotenv').config()
 
-const PORT = 3000;
+
+// // importing Routers
+// const SightingsRouter = require('./routers/sightingsRouter')
+
+// // importing Controllers
+// const SightingsController = require('./controllers/sightingsController')
+
+// importing DB
+// const db = require('./db/models/index')
+// const { comment, sighting } = db;
+// console.log(`Comment: ${comment}`)
+// console.log(`Sighting: ${sighting}`)
+
+// // initializing Controllers -> note the lowercase for the first word
+// const sightingsController = new SightingsController(sighting, comment)
+
+// // inittializing Routers
+// const sightingRouter = new SightingsRouter(sightingsController).routes()
+
+
+const PORT = process.env.PORT;
 const app = express();
+// middelvare to send fake request using thunder client 
+app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Hello, World!");
-});
+// Enable CORS access to this server
+app.use(cors());
+
+// using the routers
+// app.use('/sightings', sightingRouter)
 
 app.listen(PORT, () => {
   console.log(`Express app listening on port ${PORT}!`);
