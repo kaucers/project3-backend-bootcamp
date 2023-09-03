@@ -10,7 +10,7 @@ class LookupController extends BaseController {
 
   // Retrieve specific sighting
   async getTotalPoints(req, res) {
-    const { age, pushup, situp, running } = req.body; //as part of the requested params
+    const { age, pushup, situp, running } = req.query; //as part of the requested params
     const outputArray = []; //empty array to store all 3 points
     try {
       const pushUpPointsResult = await this.model.findOne({
