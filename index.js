@@ -3,23 +3,23 @@ const express = require('express')
 require('dotenv').config()
 
 
-// // importing Routers
-// const SightingsRouter = require('./routers/sightingsRouter')
+// importing Routers
+const IpptsRouter = require('./routers/ipptsRouter')
 
-// // importing Controllers
-// const SightingsController = require('./controllers/sightingsController')
+// importing Controllers
+const IpptsController = require('./controllers/lookupController')
 
 // importing DB
-// const db = require('./db/models/index')
-// const { comment, sighting } = db;
-// console.log(`Comment: ${comment}`)
-// console.log(`Sighting: ${sighting}`)
+const db = require('./db/models/index')
+const { lkp_pushup,lkp_situps,lkp_running } = db;
+// console.log(`lkp_pushup: ${lkp_pushup}`)
+// console.log(`lkp_situps: ${lkp_situps}`)
 
-// // initializing Controllers -> note the lowercase for the first word
-// const sightingsController = new SightingsController(sighting, comment)
+// initializing Controllers -> note the lowercase for the first word
+const ipptsController = new IpptsController(lkp_pushup,lkp_situps,lkp_running)
 
-// // inittializing Routers
-// const sightingRouter = new SightingsRouter(sightingsController).routes()
+// inittializing Routers
+const ipptController = new IpptsRouter(ipptsController).routes()
 
 
 const PORT = process.env.PORT;
@@ -31,7 +31,7 @@ app.use(express.json());
 app.use(cors());
 
 // using the routers
-// app.use('/sightings', sightingRouter)
+app.use('/', ipptController)
 
 app.listen(PORT, () => {
   console.log(`Express app listening on port ${PORT}!`);
