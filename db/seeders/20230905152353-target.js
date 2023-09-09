@@ -9,7 +9,7 @@ module.exports = {
       run: 500,
       end_date: new Date('2023-10-30'),
       start_date: new Date('2023-09-07'),
-      user_id: 1,
+      user_id: 7,
       created_at: new Date(),
       updated_at: new Date()
     }], {});

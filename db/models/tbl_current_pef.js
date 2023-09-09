@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class tbl_users extends Model {
+  class tbl_current_pef extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,23 +11,22 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.hasMany(models.tbl_target_pefs,{
+      this.belongsTo(models.tbl_users,{
         foreignKey: 'user_id',
-      })
-      this.hasMany(models.tbl_current_pefs,{
-        foreignKey: 'user_id',
-      })
+        onDelete: 'CASCADE' //link delete with user id
+      });
     }
   }
-  tbl_users.init({
-    first_name: DataTypes.STRING,
-    last_name: DataTypes.STRING,
-    email: DataTypes.STRING,
-    birthday: DataTypes.DATE
+  tbl_current_pef.init({
+    sit_up: DataTypes.INTEGER,
+    push_up: DataTypes.INTEGER,
+    run: DataTypes.INTEGER,
+    date: DataTypes.DATE,
+    user_id: DataTypes.INTEGER
   }, {
     sequelize,
-    modelName: 'tbl_users',
+    modelName: 'tbl_current_pefs',
     underscored: true,
   });
-  return tbl_users;
+  return tbl_current_pef;
 };

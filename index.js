@@ -9,14 +9,15 @@ const IpptsRouter = require('./routers/ipptsRouter')
 // importing Controllers
 const IpptsController = require('./controllers/lookupController')
 
-// importing DB
+// importing DB (Self-Note: No S here)
 const db = require('./db/models/index')
-const { lkp_pushup,lkp_situps,lkp_running } = db;
+const { lkp_pushup,lkp_situps,lkp_running, tbl_users,tbl_target_pefs,tbl_current_pefs} = db;
 // console.log(`lkp_pushup: ${lkp_pushup}`)
-// console.log(`lkp_situps: ${lkp_situps}`)
+// console.log(`tbl_target_pef: ${tbl_target_pefs}`)
 
+// s sensitive (db sensitive names)
 // initializing Controllers -> note the lowercase for the first word
-const ipptsController = new IpptsController(lkp_pushup,lkp_situps,lkp_running)
+const ipptsController = new IpptsController(lkp_pushup,lkp_situps,lkp_running,tbl_users,tbl_target_pefs,tbl_current_pefs)
 
 // inittializing Routers
 const ipptController = new IpptsRouter(ipptsController).routes()
