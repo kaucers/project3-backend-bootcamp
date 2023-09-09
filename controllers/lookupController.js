@@ -173,32 +173,38 @@ class LookupController extends BaseController {
 
 // Create updateTargetByEmail
 async updateUserTarget(req, res) {
-  const { push_up, sit_up, run, end_date, user_id} = req.body;
+  const { push_up, sit_up, run, end_date, user_id } = req.body;
 
   try {
-    // Find the user by email
+    // Find the user by user_id
     const existingUser = await this.tbl_usersModel.findOne({
       where: { id: user_id },
     });
 
-    // Assuming you have a target performance record associated with the user
-  const targetPerformance = await existingUser.getTbl_target_pef();
+    if (existingUser) {
+      // Assuming you have a target performance record associated with the user
+      const targetPerformance = await existingUser.getTbl_target_pefs();
 
-  if (targetPerformance) {
-    // Update the target performance values
-    await targetPerformance.update({
-      push_up: push_up,
-      sit_up: sit_up,
-      run: run,
-      end_date: end_date
-    });
-  } 
-     else {
+      if (targetPerformance) {
+        // Update the target performance values
+        await targetPerformance[0].update({
+          push_up: push_up,
+          sit_up: sit_up,
+          run: run,
+          end_date: end_date,
+        });
+        
+        return res.status(200).json({ success: true, msg: 'Target performance updated successfully.' });
+      } else {
+        // Target performance record does not exist, return an error
+        return res.status(404).json({ error: true, msg: 'Target performance record not found for the user.' });
+      }
+    } else {
       // User does not exist, return an error
-      return res.status(404).json({ error: true, msg: 'Target performance record not found for the user.' });
+      return res.status(404).json({ error: true, msg: 'User not found.' });
     }
   } catch (err) {
-    return res.status(400).json({ error: true, msg: err });
+    return res.status(500).json({ error: true, msg: 'Internal server error.' });
   }
 }
 
