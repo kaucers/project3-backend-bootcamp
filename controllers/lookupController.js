@@ -41,7 +41,7 @@ class LookupController extends BaseController {
       const runningPoints = runningPointsResult ? runningPointsResult.points : null;
 
       // Push the points into the output array
-      outputArray.push(pushUpPoints, sitUpPoints, runningPoints);
+      outputArray.push(sitUpPoints,pushUpPoints, runningPoints);
       
       return res.json(outputArray);
     }catch (err) {
