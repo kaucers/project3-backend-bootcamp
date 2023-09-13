@@ -207,7 +207,54 @@ async updateUserTarget(req, res) {
     return res.status(500).json({ error: true, msg: 'Internal server error.' });
   }
 }
+  
+// Create updateTargetByEmail
+async insertUserDaily(req, res) {
+  const { sit_up, push_up, run, user_id } = req.body;
 
+  try {
+    // Find the user by user_id
+    const existingUser = await this.tbl_usersModel.findOne({
+      where: { id: user_id },
+    });
+
+    if (existingUser) {
+      // Check if there is an existing entry for the current day
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      // Find or create the current performance record for the given date
+      let [currentPerformance, created] = await this.tbl_current_perfModel.findOrCreate({
+        where: {
+          user_id: user_id,
+          date: today,
+        },
+        defaults: {
+          push_up: push_up,
+          sit_up: sit_up,
+          run: run,
+          date: today,
+          user_id: user_id,
+        },
+      });
+
+      if (!created) {
+        // Update the existing current performance values
+        await currentPerformance.update({
+          push_up: push_up,
+          sit_up: sit_up,
+          run: run,
+        });
+      }
+
+      return res.status(200).json({ success: true, msg: 'Target performance updated successfully.' });
+    } else {
+      // User does not exist, return an error
+      return res.status(404).json({ error: true, msg: 'User not found.' });
+    }
+  } catch (err) {
+    return res.status(500).json({ error: true, msg: 'Internal server error.' });
+  }
+}
 
 
   // Edit  sighting

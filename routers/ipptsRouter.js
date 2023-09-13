@@ -10,6 +10,7 @@ class IpptsRouter {
     router.get("/", this.controller.getTotalPoints.bind(this.controller));
     router.get("/target", this.controller.findUserTargets.bind(this.controller));
     router.get("/history", this.controller.findUserHistory.bind(this.controller));
+    router.post("/daily", this.controller.insertUserDaily.bind(this.controller));
     router.post("/user", this.controller.insertUser.bind(this.controller));
     router.post("/updateuser", this.controller.updateUserByEmail.bind(this.controller));
     router.post("/updatetarget", this.controller.updateUserTarget.bind(this.controller));
