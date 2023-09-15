@@ -52,13 +52,13 @@ class LookupController extends BaseController {
   
    // Create retrieve target performance data for a given user
     async findUserHistory(req, res) {
-      const { firstName } = req.query;
-      console.log(`Search Query: ${JSON.stringify(firstName)}`)
+      const { email } = req.query;
+      console.log(`Search Query: ${JSON.stringify(email)}`)
       
       try {
         // Find the user whose first name matches the search query
         const user = await this.tbl_usersModel.findOne({
-          where: { first_name: firstName },
+          where: { email: email },
         });
 
         if (!user) {
@@ -76,6 +76,7 @@ class LookupController extends BaseController {
         return res.status(500).json({ error: true, msg: 'Internal server error' });
       }
     }
+    
 
   // async getPushUpPoints(req, res) {
   //   const { age, situp} = req.body; //as part of the requested params
