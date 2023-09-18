@@ -2,14 +2,16 @@ const BaseController = require("./baseController");
 const { Op } = require("sequelize");
 
 class LookupController extends BaseController {
-  constructor( model,lkp_situpsModel,lkp_runningModel, tbl_usersModel,tbl_target_pefModel,tbl_current_perfModel) {
+  
+  constructor( model,lkp_situpsModel,lkp_runningModel, tbl_usersModel,tbl_target_pefModel,tbl_current_perfModel,tbl_achieve_Model) {
     super(model)
     this.lkp_situpsModel = lkp_situpsModel; //newmodel adds here
     this.lkp_runningModel = lkp_runningModel;
     this.tbl_usersModel = tbl_usersModel;
     this.tbl_target_pefModel = tbl_target_pefModel;
     this.tbl_current_perfModel = tbl_current_perfModel;
-  }
+    this.tbl_achieve_Model = tbl_achieve_Model;
+  }  
 
   // Retrieve specific sighting
   async getTotalPoints(req, res) {
@@ -76,6 +78,148 @@ class LookupController extends BaseController {
         return res.status(500).json({ error: true, msg: 'Internal server error' });
       }
     }
+
+       // Create retrieve target performance data for a given user
+       async findUserAchievements(req, res) {
+        const { email } = req.query;
+        console.log(`Search Query: ${JSON.stringify(email)}`)
+        // To get information on backend performance then track to return
+        try {
+          // Find the user whose first name matches the search query
+          const user = await this.tbl_usersModel.findOne({
+            where: { email: email },
+          });
+  
+          if (!user) {
+            // Handle the case where the user is not found
+            return res.status(404).json({ error: true, msg: 'User not found' });
+          }
+  
+          
+          // Use the association to retrieve the user's associated target performance data
+          const currentAchievements = await user.getTbl_achieves;
+          //Functions to process:
+          
+  
+          // Respond with the target performance data for the user
+          return res.json(currentAchievements);
+        } catch (err) {
+          // Handle any errors that occur during the process
+          return res.status(500).json({ error: true, msg: 'Internal server error' });
+        }
+      }
+
+      // Query Page: Get user achievements
+      async getUserAchievements(req, res) {
+        const { email } = req.query;
+        this.tbl_usersModel
+          .findOne({
+            where: { email: email },
+            include: [
+              {
+                model: this.tbl_achieve_Model,
+                attributes: ['achievement'],
+              },
+            ],
+          })
+          .then((user) => {
+            if (!user) {
+              throw new Error('User not found');
+            }
+      
+            // Access the associated achievements using the correct getter method
+            const achievements = user.tbl_achieves.map((achievementObj) => achievementObj.achievement);
+      
+            // Extract the achievement names from the results
+            console.log(`User's achievements: ${user}`);
+            return res.json(achievements);
+          })
+          .catch((error) => {
+            console.error('Error retrieving user achievements:', error);
+            res.status(500).json({ error: 'Internal server error' });
+          });
+      }
+      
+
+      // Reponsive App Bar: Create retrieve target performance data for a given user then submit to server 
+      async addUserAchievements(req, res) {
+        const { email } = req.query;
+        console.log(`Search Query: ${JSON.stringify(email)}`)
+        // To get information on backend performance then track to return
+        try {
+          // Find the user whose first name matches the search query
+          const user = await this.tbl_usersModel.findOne({
+            where: { email: email },
+          });
+  
+          if (!user) {
+            // Handle the case where the user is not found
+            return res.status(404).json({ error: true, msg: 'User not found' });
+          }
+
+          const consecutiveDaysOfEntry = (jsonData,count) => {
+            // Sort the JSON data by date in ascending order
+            jsonData.sort((a, b) => new Date(a.date) - new Date(b.date));
+          
+            // Function to check if two dates are consecutive days
+            const areConsecutiveDays = (date1, date2) => {
+              const oneDay = 24 * 60 * 60 * 1000; // One day in milliseconds
+              const firstDate = new Date(date1);
+              const secondDate = new Date(date2);
+              const diffInDays = Math.abs((firstDate - secondDate) / oneDay);
+              return diffInDays === 1;
+            };
+          
+            let consecutiveDaysCount = 0;
+          
+            for (let i = 0; i < jsonData.length - 1; i++) {
+              const currentDate = jsonData[i].date;
+              const nextDate = jsonData[i + 1].date;
+          
+              if (areConsecutiveDays(currentDate, nextDate)) {
+                consecutiveDaysCount++;
+                if (consecutiveDaysCount === count) {
+                  // If there are 4 consecutive days, the next day makes it 5 consecutive days
+                  return true; // Found 5 consecutive days
+                }
+              } else {
+                // Reset the count if there is a gap in dates
+                consecutiveDaysCount = 0;
+              }
+            }
+          
+            // If no 5 consecutive days were found, return false
+            return false;
+          };
+
+          // Use the association to retrieve the user's associated target performance data
+          const currentPerformances = await user.getTbl_current_pefs();
+          // If true, add user into junction table
+          if (consecutiveDaysOfEntry(currentPerformances,4)){
+            this.tbl_achieve_Model.findOne({ where: { achievement: "discipline maestro" } })
+            .then((achievement) => {
+              if (!achievement) {
+                throw new Error('Achievement not found');
+              }
+              // Use the `addAchievement` method to create the association
+              return user.addTbl_achieves(achievement);
+            })
+            .then(() => {
+              console.log('User and achievement related successfully');
+            })
+            .catch((error) => {
+              console.error('Error creating user achievement entry:', error);
+            });
+          }
+  
+          // Respond with the target performance data for the user
+          return res.json(consecutiveDaysOfEntry(currentPerformances,4));
+        } catch (err) {
+          // Handle any errors that occur during the process
+          return res.status(500).json({ error: true, msg: 'Internal server error' });
+        }
+      }
+    
     
 
   // async getPushUpPoints(req, res) {
@@ -299,24 +443,7 @@ async insertUserDaily(req, res) {
     } catch (err) {
       return res.status(400).json({ error: true, msg: err });
     }
-  }
-
-   // Create commWent for specific sighting
-  async insertOneComment(req, res) {
-    const { sightingId } = req.params;
-    const { content } = req.body;
-    try {
-      const newComment = await this.commentModel.create({
-        content: content,
-        sightingId: sightingId,
-      });
-      return res.json(newComment);
-    } catch (err) {
-      return res.status(400).json({ error: true, msg: err });
-    }
-  }
-
-  
+  } 
   
 }
 

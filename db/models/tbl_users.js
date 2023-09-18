@@ -17,6 +17,10 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(models.tbl_current_pefs,{
         foreignKey: 'user_id',
       })
+      this.belongsToMany(models.tbl_achieves,{
+        through: "tbl_users_achieves",
+        foreignKey: 'user_id',
+      });
     }
   }
   tbl_users.init({
