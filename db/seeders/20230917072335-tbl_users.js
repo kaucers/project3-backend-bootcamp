@@ -5,10 +5,10 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.bulkInsert('tbl_users', [
       {
-        first_name: 'Maud',
-        last_name: 'Gone',
-        email: 'maudgone@outlook.com',
-        birthday: '1987-01-02',
+        first_name: 'Test',
+        last_name: 'Lit',
+        email: 'testlit@outlook.com',
+        birthday: '10/15/1992',
         created_at: new Date(),
         updated_at: new Date(),
       },

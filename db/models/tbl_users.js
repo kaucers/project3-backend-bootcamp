@@ -23,6 +23,8 @@ module.exports = (sequelize, DataTypes) => {
       last_name: DataTypes.STRING,
       email: DataTypes.STRING,
       birthday: DataTypes.STRING,
+      created_at: new Date(),
+      updated_at: new Date(),
     },
     {
       sequelize,
