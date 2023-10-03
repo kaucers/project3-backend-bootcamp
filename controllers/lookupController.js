@@ -220,22 +220,31 @@ class LookupController extends BaseController {
         }
       }
     
-    
 
-  // async getPushUpPoints(req, res) {
-  //   const { age, situp} = req.body; //as part of the requested params
-  //   try {
-  //     const pushUpPoints = await this.model.findOne({
-  //       where: {
-  //         age_group: age,
-  //         performance: situp,
-  //       },
-  //     });
-  //     return res.json(pushUpPoints.points);
-  //   }catch (err) {
-  //     return res.status(400).json({ error: true, msg: err });
-  //   }
-  // }
+      async checkUser(req, res) {
+        // Fetch user from request
+        const { user } = req.body;
+    
+        // Check if user is available in database?
+        const existingUser = await this.tbl_userModel.findOne({
+          where: { email: user.email },
+        });
+        console.log(existingUser);
+        if (existingUser) {
+          // User is available, so ignore and return response
+          return res.json(existingUser);
+        } else {
+          // User is not available in database and new user, so we will add into database
+          const newUser = await this.tbl_userModel.create({
+            first_name: user.first_name,
+            last_name: user.last_name,
+            email: user.email,
+            birthday: user.birthday,
+          });
+          return res.json(newUser);
+        }
+      }
+    
 
 
   // Create new user
@@ -400,50 +409,6 @@ async insertUserDaily(req, res) {
     return res.status(500).json({ error: true, msg: 'Internal server error.' });
   }
 }
-
-
-  // Edit  sighting
-  async editOne(req, res) {
-    // To get data from the user
-    const id = req.params.sightingId; //get the product id
-    console.log(`ID TO BE EDITED: ${id}`)
-    console.log(`POST: ${JSON.stringify(req.body)}`)
-    const {date, location, notes, city, country } = req.body; //get from form
-    
-    try {
-      // Edit sighting
-      const editSighting = await this.model.update({
-        date: new Date(date),
-        location: location,
-        notes: notes,
-        city: city,
-        country: country,
-      }, {
-        where:{
-          id: id //Find the id of interest from user req
-        }
-      });
-      // Respond with new sighting
-      return res.json(editSighting);
-    } catch (err) {
-      return res.status(400).json({ error: true, msg: err });
-    }
-  }
-
-  // Retrieve all comments for specific sighting
-  async getComments(req, res) {
-    const { sightingId } = req.params;
-    try {
-      const comments = await this.commentModel.findAll({
-        where: {
-          sightingId: sightingId,
-        },
-      });
-      return res.json(comments);
-    } catch (err) {
-      return res.status(400).json({ error: true, msg: err });
-    }
-  } 
   
 }
 

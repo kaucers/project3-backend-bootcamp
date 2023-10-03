@@ -3,6 +3,24 @@ const express = require('express')
 require('dotenv').config()
 
 
+/////////////////////////////////////
+//importing middleware - START
+/////////////////////////////////////
+const { auth } = require('express-oauth2-jwt-bearer');
+
+// Authorization middleware. When used, the Access Token must
+// exist and be verified against the Auth0 JSON Web Key Set.
+const checkJwt = auth({
+    audience: process.env.AUDIENCE,
+    issuerBaseURL: process.env.ISSUER_BASE_URL,
+  });
+
+
+  
+/////////////////////////////////////
+//importing middleware - END
+/////////////////////////////////////
+
 // importing Routers
 const IpptsRouter = require('./routers/ipptsRouter')
 const AchievementRouter = require('./routers/achievementRouter')
@@ -23,16 +41,23 @@ const ipptsController = new IpptsController(lkp_pushup,lkp_situps,lkp_running,tb
 const achievementsController = new AchievementsController(tbl_achieves)
 
 // inittializing Routers
-const ipptController = new IpptsRouter(ipptsController).routes()
-const achievementController = new AchievementRouter(achievementsController).routes()
+const ipptController = new IpptsRouter(ipptsController,checkJwt).routes()
+const achievementController = new AchievementRouter(achievementsController,checkJwt).routes()
 
 const PORT = process.env.PORT;
 const app = express();
-// middelvare to send fake request using thunder client 
+
+// middleware to send fake request using thunder client 
 app.use(express.json());
 
 // Enable CORS access to this server
 app.use(cors());
+
+// enforce on all endpoints
+app.use(checkJwt);
+app.get('/authorized', function (req, res) {
+  res.send('Secured Resource');
+});
 
 // using the routers
 app.use('/', ipptController) //generic

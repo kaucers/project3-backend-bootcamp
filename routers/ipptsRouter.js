@@ -16,7 +16,7 @@ class IpptsRouter {
     router.post("/user", this.controller.insertUser.bind(this.controller));
     router.post("/updateuser", this.controller.updateUserByEmail.bind(this.controller));
     router.post("/updatetarget", this.controller.updateUserTarget.bind(this.controller));
-    
+    router.post("/checkUser", this.controller.checkUser.bind(this.controller));
     return router;
   }
 }
