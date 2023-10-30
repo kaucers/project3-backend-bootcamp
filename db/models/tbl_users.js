@@ -1,7 +1,5 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class tbl_users extends Model {
     /**
@@ -11,27 +9,30 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.hasMany(models.tbl_target_pefs,{
+      this.hasMany(models.tbl_target_pefs, {
         foreignKey: 'user_id',
-      })
-      this.hasMany(models.tbl_current_pefs,{
+      });
+      this.hasMany(models.tbl_current_pefs, {
         foreignKey: 'user_id',
-      })
-      this.belongsToMany(models.tbl_achieves,{
-        through: "tbl_users_achieves",
+      });
+      this.belongsToMany(models.tbl_achieves, {
+        through: 'tbl_users_achieves',
         foreignKey: 'user_id',
       });
     }
   }
-  tbl_users.init({
-    first_name: DataTypes.STRING,
-    last_name: DataTypes.STRING,
-    email: DataTypes.STRING,
-    birthday: DataTypes.DATE
-  }, {
-    sequelize,
-    modelName: 'tbl_users',
-    underscored: true,
-  });
+  tbl_users.init(
+    {
+      first_name: DataTypes.STRING,
+      last_name: DataTypes.STRING,
+      email: DataTypes.STRING,
+      birthday: DataTypes.DATE,
+    },
+    {
+      sequelize,
+      modelName: 'tbl_users',
+      underscored: true,
+    }
+  );
   return tbl_users;
 };

@@ -20,7 +20,6 @@ class LookupController extends BaseController {
     this.tbl_achieve_Model = tbl_achieve_Model;
   }
 
-  // Retrieve specific sighting
   async getTotalPoints(req, res) {
     const { age, pushup, situp, running } = req.query; //as part of the requested params
     const outputArray = []; //empty array to store all 3 points
@@ -48,7 +47,13 @@ class LookupController extends BaseController {
       const pushUpPoints = pushUpPointsResult
         ? pushUpPointsResult.points
         : null;
+      const pushUpPoints = pushUpPointsResult
+        ? pushUpPointsResult.points
+        : null;
       const sitUpPoints = sitUpPointsResult ? sitUpPointsResult.points : null;
+      const runningPoints = runningPointsResult
+        ? runningPointsResult.points
+        : null;
       const runningPoints = runningPointsResult
         ? runningPointsResult.points
         : null;
