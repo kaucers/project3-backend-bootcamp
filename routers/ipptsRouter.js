@@ -30,6 +30,10 @@ class IpptsRouter {
       this.controller.insertUserDaily.bind(this.controller)
     );
     router.post(
+      '/updatecurrentpef',
+      this.controller.updateCurrentPerf.bind(this.controller)
+    );
+    router.post(
       '/user',
       // this.checkJwt,
       this.controller.insertUser.bind(this.controller)

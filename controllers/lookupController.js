@@ -47,13 +47,7 @@ class LookupController extends BaseController {
       const pushUpPoints = pushUpPointsResult
         ? pushUpPointsResult.points
         : null;
-      const pushUpPoints = pushUpPointsResult
-        ? pushUpPointsResult.points
-        : null;
       const sitUpPoints = sitUpPointsResult ? sitUpPointsResult.points : null;
-      const runningPoints = runningPointsResult
-        ? runningPointsResult.points
-        : null;
       const runningPoints = runningPointsResult
         ? runningPointsResult.points
         : null;
@@ -392,6 +386,38 @@ class LookupController extends BaseController {
     }
   }
 
+  async updateCurrentPerf(req, res) {
+    const { push_up, email } = req.body;
+    try {
+      const existingUser = await this.tbl_usersModel.findOne({
+        where: { email: email },
+      });
+      const today = new Date();
+      today.setHours(0);
+      today.setMinutes(0);
+      today.setSeconds(0);
+      today.setMilliseconds(0);
+
+      await this.tbl_current_perfModel.update(
+        { push_up: push_up },
+        {
+          where: {
+            user_id: existingUser.id,
+            date: today,
+          },
+        }
+      );
+      return res.status(200).json({
+        success: true,
+        msg: 'Current Target performance updated successfully.',
+      });
+    } catch (err) {
+      return res
+        .status(500)
+        .json({ error: true, msg: 'Internal server error.' });
+    }
+  }
+
   // Create updateTargetByEmail
   async insertUserDaily(req, res) {
     const { sit_up, push_up, run, user_id, today_date } = req.body;
@@ -409,6 +435,7 @@ class LookupController extends BaseController {
         today.setMinutes(0);
         today.setSeconds(0);
         today.setMilliseconds(0);
+        // today.setHours(0, 0, 0, 0);
         // Find or create the current performance record for the given date
         let [currentPerformance, created] =
           await this.tbl_current_perfModel.findOrCreate({

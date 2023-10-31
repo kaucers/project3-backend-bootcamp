@@ -2,8 +2,6 @@ const cors = require('cors');
 const express = require('express');
 require('dotenv').config();
 
-
-
 /////////////////////////////////////
 //importing middleware - START
 /////////////////////////////////////
@@ -64,14 +62,12 @@ const achievementRouter = new AchievementRouter(
 const PORT = process.env.PORT;
 const app = express();
 
-
 // Enable reading JSON request bodies
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // Enable CORS access to this server
 app.use(cors());
-
 
 // enforce on all endpoints
 app.use(checkJwt);
@@ -91,8 +87,8 @@ app.use('/', achievementRouter);
 
 // This route doesn't need authentication
 
-app.get('/api/public',function (req, res) {
-  console.log(req)
+app.get('/api/public', function (req, res) {
+  console.log(req);
   res.json({
     message:
       "Hello from a public endpoint! You don't need to be authenticated to see this.",
@@ -102,4 +98,3 @@ app.get('/api/public',function (req, res) {
 app.listen(PORT, () => {
   console.log(`Express app listening on port ${PORT}!`);
 });
-
